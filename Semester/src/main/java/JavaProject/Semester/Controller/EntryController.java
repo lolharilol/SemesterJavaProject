@@ -1,7 +1,7 @@
 package JavaProject.Semester.Controller;
 
 import JavaProject.Semester.Models.Entry;
-import JavaProject.Semester.Service.EntryService;
+import JavaProject.Semester.Services.EntryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

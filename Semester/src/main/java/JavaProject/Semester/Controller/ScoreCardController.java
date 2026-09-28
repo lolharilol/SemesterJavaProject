@@ -2,7 +2,7 @@ package JavaProject.Semester.Controller;
 
 import JavaProject.Semester.dto.ScoreCardRequest;
 import JavaProject.Semester.Models.ScoreCard;
-import JavaProject.Semester.Service.ScoreCardService;
+import JavaProject.Semester.Services.ScoreCardService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

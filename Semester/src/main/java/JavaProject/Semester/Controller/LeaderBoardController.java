@@ -1,7 +1,7 @@
 package JavaProject.Semester.Controller;
 
-import SriEshwar.Project1.dto.LeaderboardDto;
-import SriEshwar.Project1.service.LeaderboardService;
+import JavaProject.Semester.dto.LeaderboardDto;
+import JavaProject.Semester.Services.LeaderboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/leaderboard")
 @CrossOrigin(origins = "*")
-public class LeaderboardController {
+class LeaderboardController {
 
     private final LeaderboardService leaderboardService;
 
