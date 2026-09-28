@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface EntryRepository extends JpaRepository<Entry, Long> {
     List<Entry> findAllByOrderByAverageScoreDesc();
+    boolean existsByTitle(String title);
+    java.util.Optional<Entry> findByTitle(String title);
 }

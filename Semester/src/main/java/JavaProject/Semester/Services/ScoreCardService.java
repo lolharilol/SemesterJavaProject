@@ -60,12 +60,27 @@ public class ScoreCardService {
             );
         }
 
-        // 4. Create and persist ScoreCard
-        ScoreCard scoreCard = new ScoreCard(judge, entry, request.getScore(), request.getFeedback());
+        // 4. Create and persist ScoreCard with 5 Criteria (Story/20, Direction/20, Acting/20, Cinematography/20, Editing/20)
+        ScoreCard scoreCard;
+        if (request.getStory() != null || request.getDirection() != null || request.getActing() != null || request.getCinematography() != null || request.getEditing() != null) {
+            scoreCard = new ScoreCard(
+                judge,
+                entry,
+                request.getStory(),
+                request.getDirection(),
+                request.getActing(),
+                request.getCinematography(),
+                request.getEditing(),
+                request.getFeedback()
+            );
+        } else {
+            scoreCard = new ScoreCard(judge, entry, request.getScore(), request.getFeedback());
+        }
+
         ScoreCard savedScoreCard = scoreCardRepository.save(scoreCard);
 
-        logger.info("[NOTIFICATION] ScoreCard #{} recorded: Judge '{}' rated Entry '{}' with score {}",
-                savedScoreCard.getId(), judge.getName(), entry.getTitle(), request.getScore());
+        logger.info("[NOTIFICATION] ScoreCard #{} recorded: Judge '{}' rated Entry '{}' with total score {}",
+                savedScoreCard.getId(), judge.getName(), entry.getTitle(), savedScoreCard.getScore());
 
         // 5. Trigger average score calculation on Entry
         entryService.recalculateAverageScore(entryId);
