@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Festival Evaluation System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eeef2;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --badge-gold: #f59e0b;
+            --badge-silver: #64748b;
+            --badge-bronze: #d97706;
+            --radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* Top Header */
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-icon {
+            font-size: 1.8rem;
+        }
+
+        .app-title h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .app-title p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Nav Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: var(--radius);
+        }
+
+        .nav-btn {
+            border: none;
+            background: transparent;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-dark);
+        }
+
+        .nav-btn.active {
+            background: #ffffff;
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1100px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Card Layout */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Leaderboard Table / Cards */
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rank-item {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: border-color 0.15s ease;
+        }
+
+        .rank-item:hover {
+            border-color: #cbd5e1;
+        }
+
+        .rank-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .badge-1 { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .badge-2 { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .badge-3 { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+        .badge-other { background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0; }
+
+        .film-details h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .film-details p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .score-display {
+            text-align: right;
+        }
+
+        .score-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .score-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Form Controls */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Criteria Section */
+        .criteria-container {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .criteria-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+        }
+
+        .criteria-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .score-preview-box {
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .score-preview-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* API Bar */
+        .api-footer {
+            margin-top: 32px;
+            padding: 16px 20px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .api-link {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-decoration: none;
+            background: #eef2ff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .api-link:hover {
+            text-decoration: underline;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Header -->
+    <header>
+        <div class="header-content">
+            <div class="app-title">
+                <div class="app-icon">🎬</div>
+                <div>
+                    <h1>Film Festival Jury Portal</h1>
+                    <p>Evaluation & Competition Standings</p>
+                </div>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="nav-btn active" onclick="showTab('leaderboard')">🏆 Leaderboard</button>
+                <button class="nav-btn" onclick="showTab('entries')">📽️ Film Entries</button>
+                <button class="nav-btn" onclick="showTab('judges')">⚖️ Jury Members</button>
+                <button class="nav-btn" onclick="showTab('evaluate')">📝 Evaluate Film</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Tab 1: Leaderboard -->
+        <div id="tab-leaderboard" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <span>Competition Standings</span>
+                    <button class="btn btn-outline" onclick="loadLeaderboard()">Refresh</button>
+                </div>
+                <div class="leaderboard-list" id="leaderboard-items">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Film Entries -->
+        <div id="tab-entries" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">Submitted Films</div>
+                    <div id="entries-items" style="display: flex; flex-direction: column; gap: 10px; max-height: 450px; overflow-y: auto;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Add New Film Entry</div>
+                    <form onsubmit="handleCreateEntry(event)">
+                        <div class="form-group">
+                            <label>Film Title</label>
+                            <input type="text" id="entry-title" class="form-control" placeholder="e.g. Echoes of Silence" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Genre</label>
+                            <input type="text" id="entry-genre" class="form-control" placeholder="e.g. Sci-Fi / Drama" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Team / Studio</label>
+                            <input type="text" id="entry-team" class="form-control" placeholder="e.g. Starlight Studios" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Video Link (Vimeo / YouTube)</label>
+                            <input type="url" id="entry-video" class="form-control" placeholder="https://..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="entry-desc" class="form-control" rows="2" placeholder="Brief synopsis..."></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">Save Film Entry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Jury Members -->
+        <div id="tab-judges" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">Jury Members</div>
+                    <div id="judges-items" style="display: flex; flex-direction: column; gap: 10px; max-height: 450px; overflow-y: auto;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Register Jury Member</div>
+                    <form onsubmit="handleRegisterJudge(event)">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="judge-name" class="form-control" placeholder="e.g. Christopher Nolan" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="judge-email" class="form-control" placeholder="nolan@filmjury.org" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Expertise</label>
+                            <input type="text" id="judge-expertise" class="form-control" placeholder="e.g. Directing & Narrative" required>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">Register Judge</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Evaluation Scorecard -->
+        <div id="tab-evaluate" class="tab-content">
+            <div class="card" style="max-width: 700px; margin: 0 auto;">
+                <div class="card-header">Submit Scorecard Evaluation</div>
+                <form onsubmit="handleSubmitScorecard(event)">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Select Judge</label>
+                            <select id="score-judge" class="form-control" required>
+                                <option value="">-- Choose Judge --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Film Entry</label>
+                            <select id="score-entry" class="form-control" required>
+                                <option value="">-- Choose Film --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="font-weight: 600; font-size: 0.9rem; margin: 12px 0 8px 0;">
+                        Evaluation Criteria (0 to 20 Points Each):
+                    </div>
+
+                    <div class="criteria-container">
+                        <div class="criteria-row">
+                            <span>📖 Story</span>
+                            <input type="number" id="score-story" class="form-control" style="width: 90px;" min="0" max="20" step="0.5" value="18" oninput="calcTotalScore()" required>
+                        </div>
+                        <div class="criteria-row">
+                            <span>🎬 Direction</span>
+                            <input type="number" id="score-direction" class="form-control" style="width: 90px;" min="0" max="20" step="0.5" value="18" oninput="calcTotalScore()" required>
+                        </div>
+                        <div class="criteria-row">
+                            <span>🎭 Acting</span>
+                            <input type="number" id="score-acting" class="form-control" style="width: 90px;" min="0" max="20" step="0.5" value="18" oninput="calcTotalScore()" required>
+                        </div>
+                        <div class="criteria-row">
+                            <span>🎥 Cinematography</span>
+                            <input type="number" id="score-cinematography" class="form-control" style="width: 90px;" min="0" max="20" step="0.5" value="18" oninput="calcTotalScore()" required>
+                        </div>
+                        <div class="criteria-row">
+                            <span>✂️ Editing</span>
+                            <input type="number" id="score-editing" class="form-control" style="width: 90px;" min="0" max="20" step="0.5" value="18" oninput="calcTotalScore()" required>
+                        </div>
+                    </div>
+
+                    <div class="score-preview-box">
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Total Calculated Score</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Sum of 5 criteria</div>
+                        </div>
+                        <div class="score-preview-val" id="total-score-val">90.0 / 100</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Feedback & Comments</label>
+                        <textarea id="score-feedback" class="form-control" rows="2" placeholder="Critique or notes..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%; padding: 12px;">Submit Evaluation</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Direct API Footer -->
+        <div class="api-footer">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">REST API Endpoints:</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a href="/api/leaderboard" target="_blank" class="api-link">/api/leaderboard</a>
+                <a href="/api/entries" target="_blank" class="api-link">/api/entries</a>
+                <a href="/api/judges" target="_blank" class="api-link">/api/judges</a>
+                <a href="/api/scorecards" target="_blank" class="api-link">/api/scorecards</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast" class="toast">Operation completed</div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(tabName));
+            if (btn) btn.classList.add('active');
+
+            const tab = document.getElementById('tab-' + tabName);
+            if (tab) tab.classList.add('active');
+
+            if (tabName === 'leaderboard') loadLeaderboard();
+            if (tabName === 'entries') loadEntries();
+            if (tabName === 'judges') loadJudges();
+            if (tabName === 'evaluate') populateDropdowns();
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.background = isError ? '#ef4444' : '#10b981';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch('/api/leaderboard');
+                const data = await res.json();
+                const container = document.getElementById('leaderboard-items');
+
+                if (data.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">No film evaluations found yet.</div>';
+                    return;
+                }
+
+                container.innerHTML = data.map(item => {
+                    let badgeClass = 'badge-other';
+                    if (item.rank === 1) badgeClass = 'badge-1';
+                    else if (item.rank === 2) badgeClass = 'badge-2';
+                    else if (item.rank === 3) badgeClass = 'badge-3';
+
+                    return `
+                        <div class="rank-item">
+                            <div class="rank-info">
+                                <div class="badge ${badgeClass}">#${item.rank}</div>
+                                <div class="film-details">
+                                    <h3>${escapeHtml(item.title)}</h3>
+                                    <p>${escapeHtml(item.genre || 'General')} • Studio: ${escapeHtml(item.teamName || 'Independent')}</p>
+                                </div>
+                            </div>
+                            <div class="score-display">
+                                <div class="score-num">${item.averageScore ? item.averageScore.toFixed(1) : '0.0'}</div>
+                                <div class="score-sub">${item.totalEvaluations || 0} Review${item.totalEvaluations === 1 ? '' : 's'}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadEntries() {
+            try {
+                const res = await fetch('/api/entries');
+                const entries = await res.json();
+                const container = document.getElementById('entries-items');
+
+                if (entries.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-muted);">No entries registered.</div>';
+                    return;
+                }
+
+                container.innerHTML = entries.map(e => `
+                    <div style="background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.9rem;">${escapeHtml(e.title)}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">${escapeHtml(e.genre)} • ${escapeHtml(e.teamName)}</div>
+                        </div>
+                        <button onclick="handleDeleteEntry(${e.id})" class="btn btn-danger">Delete</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadJudges() {
+            try {
+                const res = await fetch('/api/judges');
+                const judges = await res.json();
+                const container = document.getElementById('judges-items');
+
+                if (judges.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-muted);">No judges registered.</div>';
+                    return;
+                }
+
+                container.innerHTML = judges.map(j => `
+                    <div style="background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 6px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">⚖️ ${escapeHtml(j.name)}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${escapeHtml(j.expertise || 'Jury')} • ${escapeHtml(j.email)}</div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function populateDropdowns() {
+            try {
+                const [jRes, eRes] = await Promise.all([fetch('/api/judges'), fetch('/api/entries')]);
+                const judges = await jRes.json();
+                const entries = await eRes.json();
+
+                const jSelect = document.getElementById('score-judge');
+                const eSelect = document.getElementById('score-entry');
+
+                jSelect.innerHTML = '<option value="">-- Choose Judge --</option>' + 
+                    judges.map(j => `<option value="${j.id}">${escapeHtml(j.name)}</option>`).join('');
+
+                eSelect.innerHTML = '<option value="">-- Choose Film --</option>' + 
+                    entries.map(e => `<option value="${e.id}">${escapeHtml(e.title)}</option>`).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function calcTotalScore() {
+            const s = parseFloat(document.getElementById('score-story').value) || 0;
+            const d = parseFloat(document.getElementById('score-direction').value) || 0;
+            const a = parseFloat(document.getElementById('score-acting').value) || 0;
+            const c = parseFloat(document.getElementById('score-cinematography').value) || 0;
+            const e = parseFloat(document.getElementById('score-editing').value) || 0;
+            const total = s + d + a + c + e;
+            document.getElementById('total-score-val').textContent = total.toFixed(1) + ' / 100';
+        }
+
+        async function handleCreateEntry(evt) {
+            evt.preventDefault();
+            const payload = {
+                title: document.getElementById('entry-title').value,
+                genre: document.getElementById('entry-genre').value,
+                teamName: document.getElementById('entry-team').value,
+                videoLink: document.getElementById('entry-video').value,
+                description: document.getElementById('entry-desc').value
+            };
+
+            try {
+                const res = await fetch('/api/entries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('Failed to create entry');
+                showToast('Film entry created successfully!');
+                evt.target.reset();
+                loadEntries();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        async function handleRegisterJudge(evt) {
+            evt.preventDefault();
+            const payload = {
+                name: document.getElementById('judge-name').value,
+                email: document.getElementById('judge-email').value,
+                expertise: document.getElementById('judge-expertise').value
+            };
+
+            try {
+                const res = await fetch('/api/judges', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('Failed to register judge');
+                showToast('Jury member registered!');
+                evt.target.reset();
+                loadJudges();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        async function handleSubmitScorecard(evt) {
+            evt.preventDefault();
+            const judgeId = document.getElementById('score-judge').value;
+            const entryId = document.getElementById('score-entry').value;
+
+            if (!judgeId || !entryId) {
+                showToast('Please select both judge and film.', true);
+                return;
+            }
+
+            const payload = {
+                judgeId: parseInt(judgeId),
+                entryId: parseInt(entryId),
+                story: parseFloat(document.getElementById('score-story').value),
+                direction: parseFloat(document.getElementById('score-direction').value),
+                acting: parseFloat(document.getElementById('score-acting').value),
+                cinematography: parseFloat(document.getElementById('score-cinematography').value),
+                editing: parseFloat(document.getElementById('score-editing').value),
+                feedback: document.getElementById('score-feedback').value
+            };
+
+            try {
+                const res = await fetch('/api/scorecards', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.message || 'Submission failed');
+                }
+                showToast('Scorecard submitted!');
+                evt.target.reset();
+                calcTotalScore();
+                showTab('leaderboard');
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        async function handleDeleteEntry(id) {
+            if (!confirm('Delete this entry?')) return;
+            try {
+                const res = await fetch(`/api/entries/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed to delete');
+                showToast('Entry deleted');
+                loadEntries();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            })[m]);
+        }
+
+        // Init
+        loadLeaderboard();
+        calcTotalScore();
+    </script>
+</body>
+</html>

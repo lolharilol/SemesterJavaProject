@@ -27,7 +27,7 @@ public class LeaderboardService {
         for (int i = 0; i < rankedEntries.size(); i++) {
             Entry entry = rankedEntries.get(i);
             LeaderboardDto dto = new LeaderboardDto(
-                    i + 1, // rank starts at 1
+                    i + 1,
                     entry.getId(),
                     entry.getTitle(),
                     entry.getGenre(),

@@ -43,16 +43,12 @@ public class ScoreCardService {
         Long judgeId = request.getJudgeId();
         Long entryId = request.getEntryId();
 
-        // 1. Verify Entry exists
         Entry entry = entryRepository.findById(entryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot submit scorecard. Entry not found with ID: " + entryId));
 
-        // 2. Verify Judge exists
         Judge judge = judgeRepository.findById(judgeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot submit scorecard. Judge not found with ID: " + judgeId));
 
-        // 3. BUSINESS RULE: A judge can submit only ONE scorecard per entry.
-        // Enforce in Service Layer before persisting.
         if (scoreCardRepository.existsByJudgeIdAndEntryId(judgeId, entryId)) {
             logger.warn("REJECTED SUBMISSION: Judge ID {} has already evaluated Entry ID {}", judgeId, entryId);
             throw new DuplicateSubmissionException(
@@ -60,7 +56,6 @@ public class ScoreCardService {
             );
         }
 
-        // 4. Create and persist ScoreCard with 5 Criteria (Story/20, Direction/20, Acting/20, Cinematography/20, Editing/20)
         ScoreCard scoreCard;
         if (request.getStory() != null || request.getDirection() != null || request.getActing() != null || request.getCinematography() != null || request.getEditing() != null) {
             scoreCard = new ScoreCard(
@@ -82,7 +77,6 @@ public class ScoreCardService {
         logger.info("[NOTIFICATION] ScoreCard #{} recorded: Judge '{}' rated Entry '{}' with total score {}",
                 savedScoreCard.getId(), judge.getName(), entry.getTitle(), savedScoreCard.getScore());
 
-        // 5. Trigger average score calculation on Entry
         entryService.recalculateAverageScore(entryId);
 
         return savedScoreCard;

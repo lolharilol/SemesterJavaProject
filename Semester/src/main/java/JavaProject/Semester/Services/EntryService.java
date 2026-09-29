@@ -72,7 +72,6 @@ public class EntryService {
             double total = scoreCards.stream().mapToDouble(ScoreCard::getScore).sum();
             double avg = total / scoreCards.size();
 
-            // Round to 2 decimal places
             BigDecimal roundedAvg = BigDecimal.valueOf(avg).setScale(2, RoundingMode.HALF_UP);
             entry.setAverageScore(roundedAvg.doubleValue());
             entry.setTotalEvaluations(scoreCards.size());

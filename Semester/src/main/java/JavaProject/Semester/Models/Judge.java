@@ -1,4 +1,3 @@
-///
 package JavaProject.Semester.Models;
 
 import jakarta.persistence.*;
